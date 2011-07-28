@@ -66,10 +66,11 @@ int main(int argc, char** argv) {
 				timeout=atoi(optarg);
 				break;
 			case 'f':
-				font=strcpy(malloc(strlen(optarg)+1), optarg);
+				font=strncpy(malloc(strlen(optarg)+1), optarg, strlen(optarg)+1);
 				break;
 			case 'c':
-				color=strcpy(malloc(strlen(optarg)+1), optarg);
+				color=malloc(strlen(optarg));
+				color=strncpy(malloc(strlen(optarg)+1), optarg, strlen(optarg)+1);
 				break;
 			case 'F':
 				input=fopen(optarg, "r");
@@ -84,7 +85,6 @@ int main(int argc, char** argv) {
 				exit(0);
 				break;
 		}
-				
 	}
 
 	osd = xosd_create(1);
