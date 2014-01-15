@@ -19,6 +19,9 @@
 #include <unistd.h>
 #include <errno.h>
 #include <getopt.h>
+#include <X11/Xlib.h>
+
+#include <X11/extensions/Xrandr.h>
 
 #define ASublimOptString "ht:c:f:F:S:s:D:d:"
 
@@ -37,6 +40,16 @@ struct option lopts[]={
 
 int main(int argc, char** argv) {
 	xosd *osd;
+
+	Display* d=XOpenDisplay(":0");
+	
+	int screenCount = ScreenCount(d);
+	int *supportedSizes = (int*)malloc(255);
+	printf("\nNumber of screens: %d\n", screenCount);
+	int i;
+	for (i=0; i<screenCount ; i++) {
+		printf(" %d: %dx%x\n", i, DisplayWidth(d, i), DisplayHeight(d, i));
+	}	
 
 	int timeout;
 	char* color="LawnGreen";
@@ -96,7 +109,7 @@ int main(int argc, char** argv) {
 		fprintf(stderr, "Color set error\n");
 		exit(1);
 	}
-	if(xosd_set_timeout(osd, 1)==-1) {
+	if(xosd_set_timeout(osd, timeout)==-1) {
 		fprintf(stderr, "Timeout set error\n");
 		exit(1);
 	}
@@ -105,15 +118,17 @@ int main(int argc, char** argv) {
 	srand48(time(NULL));
 	char* x=calloc(1024, sizeof(char));
 
-	scanf(" %1023[^ ]s", x);
+	scanf(" %1023[^ \t\n]s", x);
 	while(x[0]!=EOF) {
-		xosd_set_vertical_offset(osd, lrand48()%768);
-		xosd_set_horizontal_offset(osd, lrand48()%1024);
-		xosd_display(osd, 0, XOSD_string, x);
+		int screen = lrand48() % screenCount;
+		//printf("Screen #d\n", screen);
+		xosd_set_vertical_offset(osd, lrand48()%DisplayHeight(d,screen));
+		xosd_set_horizontal_offset(osd, lrand48()%DisplayWidth(d,screen));
+		xosd_display(osd, screen, XOSD_string, x);
 		xosd_show(osd);
 		usleep((unsigned int)((lrand48()%(delayShowMax-delayShowMin)))+delayShowMin);
 		xosd_hide(osd);
-		scanf(" %1023[^ ]s", x);
+		scanf(" %1023[^ \t\n]s", x);
 		usleep((unsigned int)((lrand48()%(delayWordMax-delayWordMin)))+delayWordMin);
 	}
 	
