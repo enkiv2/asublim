@@ -1,7 +1,7 @@
 all: clean src
 
 src:
-	gcc -Wall -lxosd sublim.c -o sublim
+	gcc -Wall -fstack-protector-all -lxosd -lX11 -lXrandr sublim.c -o sublim
 
 clean:
 	rm -f sublim
