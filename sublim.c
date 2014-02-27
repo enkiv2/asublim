@@ -23,7 +23,7 @@
 
 #include <X11/extensions/Xrandr.h>
 
-#define ASublimOptString "ht:c:f:F:S:s:D:d:"
+#define ASublimOptString "ht:c:f:F:S:s:D:d:w:y:"
 
 struct option lopts[]={ 
 	{ "help", 		0, 0, 'h'},
@@ -35,9 +35,30 @@ struct option lopts[]={
 	{ "delayShowMax",  	1, 0, 'S'},
 	{ "delayShowMin",	1, 0, 's'},
 	{ "delayWordMax", 	1, 0, 'D'},
-	{ "delayWordMin", 	1, 0, 'd'}
+	{ "delayWordMin", 	1, 0, 'd'},
+	{ "screen-width",	1, 0, 'w'},
+	{ "screen-height",	1, 0, 'y'}
 };
-
+const char* helpstr="[options]\n\
+\n\
+Options:\n\
+	-h\n\
+	--help		Print this help\n\
+\n\
+	--timeout	Timeout in seconds for automatic refresh\n\
+	-c\n\
+	--color\n\
+	--colour	Specify text colour\n\
+	-f\n\
+	--font		Specify X font string\n\
+	-F\n\
+	--file		Specify input file (default stdin)\n\
+	--delayShowMax	Maximum display time in usecs\n\
+	--delayShowMin	Minimum display time in usecs\n\
+	--delayWordMax	Maximum delay between words in usecs\n\
+	--delayWordMin	Minimum delay between words in usecs\n\
+	--screen-width	Specify screen width\n\
+	--screen-height	Specify screen height\n\n";
 int main(int argc, char** argv) {
 	xosd *osd;
 
@@ -45,10 +66,10 @@ int main(int argc, char** argv) {
 	
 	int screenCount = ScreenCount(d);
 	int *supportedSizes = (int*)malloc(255);
-	printf("\nNumber of screens: %d\n", screenCount);
+	fprintf(stderr, "\nNumber of screens: %d\n", screenCount);
 	int i;
 	for (i=0; i<screenCount ; i++) {
-		printf(" %d: %dx%x\n", i, DisplayWidth(d, i), DisplayHeight(d, i));
+		fprintf(stderr, " %d: %dx%x\n", i, DisplayWidth(d, i), DisplayHeight(d, i));
 	}	
 
 	int timeout;
@@ -59,6 +80,9 @@ int main(int argc, char** argv) {
 	int delayShowMin=10;
 	int delayWordMax=50;
 	int delayWordMin=10;
+
+	int screenWidthOverride=0;
+	int screenHeightOverride=0;
 
 	int ret;
 	while((ret=getopt_long(argc, argv, ASublimOptString, lopts, NULL)) != -1) {
@@ -92,9 +116,15 @@ int main(int argc, char** argv) {
 					input=stdin;
 				}
 				break;
+			case 'w':
+				screenWidthOverride=atoi(optarg);
+				break;
+			case 'y':
+				screenHeightOverride=atoi(optarg);
+				break;
 			case 'h':
 			case '?':
-				fprintf(stderr, "Usage: %s [options]\n\nOptions:\n\t-h\n\t--help\t\tPrint this help\n\t-t\n\t--timeout\tTimeout in seconds for automatic refresh\n\t-c\n\t--color\n\t--colour\tSpecify text colour\n\t-f\n\t--font\t\tSpecify X font string\n\t-F\n\t--file\t\tSpecify input file (default stdin)\n\t--delayShowMax\tMaximum display time in usecs\n\t--delayShowMin\tMinimum display time in usecs\n\t--delayWordMax\tMaximum delay between words in usecs\n\t--delayWordMin\tMinimum delay between words in usecs\n\n", argv[0]);
+				fprintf(stderr, "Usage: %s %s", argv[0], helpstr);
 				exit(0);
 				break;
 		}
@@ -118,17 +148,23 @@ int main(int argc, char** argv) {
 	srand48(time(NULL));
 	char* x=calloc(1024, sizeof(char));
 
+	int height=screenHeightOverride;
+	int width=screenWidthOverride;
 	scanf(" %1023[^ \t\n]s", x);
 	while(x[0]!=EOF) {
 		int screen = lrand48() % screenCount;
 		//printf("Screen #d\n", screen);
-		xosd_set_vertical_offset(osd, lrand48()%DisplayHeight(d,screen));
-		xosd_set_horizontal_offset(osd, lrand48()%DisplayWidth(d,screen));
+		if (!(screenWidthOverride && screenHeightOverride)) {
+			height=	DisplayHeight(d, screen);
+			width=	DisplayWidth(d, screen);
+		}
+		xosd_set_vertical_offset(osd, lrand48()%height);
+		xosd_set_horizontal_offset(osd, lrand48()%width);
 		xosd_display(osd, screen, XOSD_string, x);
 		xosd_show(osd);
 		usleep((unsigned int)((lrand48()%(delayShowMax-delayShowMin)))+delayShowMin);
 		xosd_hide(osd);
-		scanf(" %1023[^ \t\n]s", x);
+		fscanf(input, " %1023[^ \t\n]s", x);
 		usleep((unsigned int)((lrand48()%(delayWordMax-delayWordMin)))+delayWordMin);
 	}
 	
