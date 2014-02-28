@@ -62,7 +62,6 @@ int main(int argc, char** argv) {
 	Display* d=XOpenDisplay(":0");
 	
 	int screenCount = ScreenCount(d);
-	int *supportedSizes = (int*)malloc(255);
 	fprintf(stderr, "\nNumber of screens: %d\n", screenCount);
 	int i;
 	for (i=0; i<screenCount ; i++) {
