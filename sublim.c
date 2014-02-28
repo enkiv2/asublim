@@ -147,7 +147,7 @@ int main(int argc, char** argv) {
 
 	int height=screenHeightOverride;
 	int width=screenWidthOverride;
-	scanf(" %1023[^ \t\n]s", x);
+	fscanf(input, " %1023[^ \t\n]s", x);
 	while(x[0]!=EOF) {
 		int screen = lrand48() % screenCount;
 		//printf("Screen #d\n", screen);
