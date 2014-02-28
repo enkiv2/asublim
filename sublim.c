@@ -1,14 +1,11 @@
 /*
  * asublim - an application to display visual subliminal messages from a text stream
  *
- * (c) 2011 John Ohno
+ * (c) 2011,2014 John Ohno
  * Licensed under the GNU GPL v.3
  *
  * Requires xosd, which can be downloaded from:
  *  https://sourceforge.net/projects/libxosd/
- *
- * 
- * TODO: add options to configure screen size.
  *
  */
 #include <xosd.h>
