@@ -150,7 +150,6 @@ int main(int argc, char** argv) {
 	fscanf(input, " %1023[^ \t\r\n]s", x);
 	while(x[0]!=EOF) {
 		int screen = lrand48() % screenCount;
-		//printf("Screen #d\n", screen);
 		if (!(screenWidthOverride && screenHeightOverride)) {
 			height=	DisplayHeight(d, screen);
 			width=	DisplayWidth(d, screen);
@@ -158,9 +157,11 @@ int main(int argc, char** argv) {
 		xosd_set_vertical_offset(osd, lrand48()%height);
 		xosd_set_horizontal_offset(osd, lrand48()%width);
 		xosd_display(osd, screen, XOSD_string, x);
+		
 		xosd_show(osd);
 		usleep((unsigned int)((lrand48()%(delayShowMax-delayShowMin)))+delayShowMin);
 		xosd_hide(osd);
+		
 		fscanf(input, " %1023[^ \t\r\n]s", x);
 		usleep((unsigned int)((lrand48()%(delayWordMax-delayWordMin)))+delayWordMin);
 	}
