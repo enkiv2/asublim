@@ -1,0 +1,3 @@
+(echo $$ >> ~/.xs.pid ; false ; while [[ $? -ne 0 ]] ; do
+        asublim -c "$(cat /etc/X11/rgb.txt | grep '\t' | cut -f 3 | grep -v ' '| sort -R | head -n 1)" --font "$(xlsfonts | sort -R | head -n 1)" "$@"
+done) &

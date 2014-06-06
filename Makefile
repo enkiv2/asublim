@@ -8,4 +8,5 @@ clean:
 
 install: src
 	cp sublim /usr/bin/asublim
+	cp sublimWrap /usr/bin/
 
