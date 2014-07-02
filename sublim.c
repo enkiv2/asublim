@@ -16,9 +16,14 @@
 #include <unistd.h>
 #include <errno.h>
 #include <getopt.h>
+#include <signal.h>
 #include <X11/Xlib.h>
 
 #include <X11/extensions/Xrandr.h>
+
+void intHandler(int sig) {
+	exit(0);
+}
 
 #define ASublimOptString "ht:c:f:F:S:s:D:d:w:y:"
 
@@ -57,6 +62,8 @@ Options:\n\
 	--screen-width	Specify screen width\n\
 	--screen-height	Specify screen height\n\n";
 int main(int argc, char** argv) {
+	signal(SIGINT, intHandler);
+	
 	xosd *osd;
 
 	Display* d=XOpenDisplay(":0");
