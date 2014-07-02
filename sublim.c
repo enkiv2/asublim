@@ -146,8 +146,8 @@ int main(int argc, char** argv) {
 
 	int height=screenHeightOverride;
 	int width=screenWidthOverride;
-	fscanf(input, " %1023[^ \t\r\n]s", buf);
-	while(buf[0]!=EOF) {
+	ret=fscanf(input, " %1023[^ \t\r\n]s", buf);
+	while(buf[0]!=EOF && ret>0) {
 		int screen = lrand48() % screenCount;
 		if (!(screenWidthOverride && screenHeightOverride)) {
 			height=	DisplayHeight(d, screen);
@@ -161,7 +161,7 @@ int main(int argc, char** argv) {
 		usleep((unsigned int)((lrand48()%(delayShowMax-delayShowMin)))+delayShowMin);
 		xosd_hide(osd);
 		
-		fscanf(input, " %1023[^ \t\r\n]s", buf);
+		ret=fscanf(input, " %1023[^ \t\r\n]s", buf);
 		usleep((unsigned int)((lrand48()%(delayWordMax-delayWordMin)))+delayWordMin);
 	}
 	
