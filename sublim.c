@@ -79,8 +79,8 @@ int main(int argc, char** argv) {
 	char* color="LawnGreen";
 	char* font="-*-fixed-*-*-*-*-15-140-*-*-*-*-*-*";
 	FILE* input=stdin;
-	int delayShowMax=50;
-	int delayShowMin=10;
+	int delayShowMax=10000;
+	int delayShowMin=1000;
 	int delayWordMax=50;
 	int delayWordMin=10;
 
@@ -149,11 +149,11 @@ int main(int argc, char** argv) {
 
 	xosd_set_shadow_offset(osd, 3);
 	srand48(time(NULL));
-	char* buf=calloc(1024, sizeof(char));
+	char* buf=calloc(1025, sizeof(char));
 
 	int height=screenHeightOverride;
 	int width=screenWidthOverride;
-	ret=fscanf(input, " %1023[^ \t\r\n]s", buf);
+	ret=fscanf(input, "%1024s", buf);
 	while(buf[0]!=EOF && ret>0) {
 		int screen = lrand48() % screenCount;
 		if (!(screenWidthOverride && screenHeightOverride)) {
@@ -168,7 +168,7 @@ int main(int argc, char** argv) {
 		usleep((unsigned int)((lrand48()%(delayShowMax-delayShowMin)))+delayShowMin);
 		xosd_hide(osd);
 		
-		ret=fscanf(input, " %1023[^ \t\r\n]s", buf);
+		ret=fscanf(input, "%1024s", buf);
 		usleep((unsigned int)((lrand48()%(delayWordMax-delayWordMin)))+delayWordMin);
 	}
 	
