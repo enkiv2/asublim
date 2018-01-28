@@ -9,7 +9,7 @@ font="fixed"
 color="LawnGreen"
 inputStream=sys.stdin
 delayShowMax=100
-delayShowMin=1
+delayShowMin=10
 delayWordMax=50
 delayWordMin=10
 width=1024
@@ -92,7 +92,7 @@ osd.set_timeout(timeout)
 
 def main():
 	for line in inputStream.xreadlines():
-		for word in line.split():
+		for word in line.replace("\0", " ").split():
 			displayWord(word)
 main()
 osd.wait_until_no_display()
