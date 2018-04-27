@@ -74,7 +74,7 @@ if(len(sys.argv)>1):
 			timeout=int(opt[1])
 		
 def WordGenerator(path):
-	for line in path.readlines():
+	for line in path.xreadlines():
 	    for word in line.split():
 		    yield word
 	
@@ -108,12 +108,10 @@ class SublimPane (Gtk.Window):
 		self.set_app_paintable(True)
 		self.connect("draw", self.area_draw)
 		self.set_decorated(False)
-		print("Adding timeout...")
+                self.set_skip_taskbar_hint(True)
 		GObject.timeout_add(0, self.showStep)
-		print("Constructed")
 		self.show_all()
 	def hideStep(self):
-		print("Next!")
 		self.hide()
 		GObject.timeout_add(random.randint(self.delayWordMin, self.delayWordMax), self.showStep)
 	def showStep(self):
