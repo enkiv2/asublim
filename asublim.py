@@ -1,9 +1,10 @@
 #!/usr/bin/env python
-import pyosd
-import sys, time
-import getopt
+import cairo
+from gi.repository import Gtk, Gdk, Pango, GObject
 from random import Random
 random=Random()
+import getopt
+import sys, time
 
 font="fixed"
 color="LawnGreen"
@@ -72,27 +73,64 @@ if(len(sys.argv)>1):
 		elif optname=="--timeout":
 			timeout=int(opt[1])
 		
+def WordGenerator(path):
+	for line in path.readlines():
+	    for word in line.split():
+		    yield word
+	
 
 def usleep(ms):
 	time.sleep(ms*0.0001)
-def set_pos(x, y):
-	osd.set_horizontal_offset(x)
-	osd.set_vertical_offset(y)
-def displayWord(word):
-	set_pos(random.randint(0, width), random.randint(0, height))
-	osd.display(word)
-	osd.show()
-	usleep(random.randint(delayShowMin, delayShowMax))
-	osd.hide()
-	usleep(random.randint(delayWordMin, delayWordMax))
 
-osd=pyosd.osd(font, color)
-osd.set_outline_colour("black")
-osd.set_timeout(timeout)
+class SublimPane (Gtk.Window):
+	def __init__(self, body, fnt, max_x, max_y, delayShowMin, delayShowMax, delayWordMin, delayWordMax, color):
+		super(SublimPane, self).__init__()
+		self.body=body
+		self.max_x=max_x
+		self.max_y=max_y
+		self.delayShowMax=delayShowMax
+		self.delayShowMin=delayShowMin
+		self.delayWordMax=delayWordMax
+		self.delayWordMin=delayWordMin
+		self.color=color
+		self.set_position(Gtk.WindowPosition.CENTER)
+		self.screen = self.get_screen()
+		self.visual = self.screen.get_rgba_visual()
+		if self.visual != None and self.screen.is_composited():
+			self.set_visual(self.visual)
 
-def main():
-	for line in inputStream.xreadlines():
-		for word in line.replace("\0", " ").split():
-			displayWord(word)
-main()
-osd.wait_until_no_display()
+		box = Gtk.Box()
+		self.label=Gtk.Label()
+		self.label.modify_font(fnt)
+		box.add(self.label)
+		self.add(box)
+
+		self.set_app_paintable(True)
+		self.connect("draw", self.area_draw)
+		self.set_decorated(False)
+		print("Adding timeout...")
+		GObject.timeout_add(0, self.showStep)
+		print("Constructed")
+		self.show_all()
+	def hideStep(self):
+		print("Next!")
+		self.hide()
+		GObject.timeout_add(random.randint(self.delayWordMin, self.delayWordMax), self.showStep)
+	def showStep(self):
+		self.move(random.randint(0, self.max_x+1), random.randint(0, self.max_y+1))
+		try:
+			self.label.set_markup("<span foreground=\""+self.color+"\">"+self.body.next()+"</span>")
+		except:
+			sys.exit()
+		self.show()
+		GObject.timeout_add(random.randint(self.delayShowMin, self.delayShowMax), self.hideStep)
+
+	def area_draw(self, widget, cr):
+		cr.set_source_rgba(0, 0, 0, 0.0)
+		cr.set_operator(cairo.OPERATOR_SOURCE)
+		cr.paint()
+		cr.set_operator(cairo.OPERATOR_OVER)
+
+win=SublimPane(WordGenerator(inputStream), Pango.FontDescription(font), width, height, delayShowMin, delayShowMax, delayWordMin, delayWordMax, color)
+win.connect("delete-event", Gtk.main_quit)
+Gtk.main()
