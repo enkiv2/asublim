@@ -85,6 +85,11 @@ def usleep(ms):
 class SublimPane (Gtk.Window):
 	def __init__(self, body, fnt, max_x, max_y, delayShowMin, delayShowMax, delayWordMin, delayWordMax, color):
 		super(SublimPane, self).__init__()
+		self.set_decorated(False)
+		self.set_accept_focus(False)
+                self.set_modal(False)
+                self.set_skip_taskbar_hint(True)
+                self.set_skip_pager_hint(True)
 		self.body=body
 		self.max_x=max_x
 		self.max_y=max_y
@@ -107,8 +112,6 @@ class SublimPane (Gtk.Window):
 
 		self.set_app_paintable(True)
 		self.connect("draw", self.area_draw)
-		self.set_decorated(False)
-                self.set_skip_taskbar_hint(True)
 		GObject.timeout_add(0, self.showStep)
 		self.show_all()
 	def hideStep(self):
@@ -117,7 +120,7 @@ class SublimPane (Gtk.Window):
 	def showStep(self):
 		self.move(random.randint(0, self.max_x+1), random.randint(0, self.max_y+1))
 		try:
-			self.label.set_markup("<span foreground=\""+self.color+"\">"+self.body.next()+"</span>")
+			self.label.set_markup("<span foreground=\""+self.color+"\">"+self.body.next().replace("<", "&lt;").replace(">", "&lt;")+"</span>")
 		except:
 			sys.exit()
 		self.show()
