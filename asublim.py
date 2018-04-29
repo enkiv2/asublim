@@ -88,6 +88,7 @@ class SublimPane (Gtk.Window):
 		self.set_decorated(False)
 		self.set_accept_focus(False)
                 self.set_modal(False)
+                self.set_keep_above(True)
                 self.set_skip_taskbar_hint(True)
                 self.set_skip_pager_hint(True)
 		self.body=body
