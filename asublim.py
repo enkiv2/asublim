@@ -122,7 +122,7 @@ class SublimPane (Gtk.Window):
                 try:
                     pos=self.get_parent().get_position()
                 except:
-                    pos=(0, 0)
+                    pos=self.get_position()
 		self.move(random.randint(0, self.max_x+1)-pos[0], random.randint(0, self.max_y+1)-pos[1])
 		try:
 			self.label.set_markup("<span foreground=\""+self.color+"\">"+self.body.next().replace("<", "&lt;").replace(">", "&lt;")+"</span>")
