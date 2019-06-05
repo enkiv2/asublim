@@ -12,3 +12,10 @@ A script, sublimWrap, has been provided that will attempt to randomize both the 
 There are some known problems with asublim that may cause problems, and can be remedied by modifying the configuration. If the delayShowMin and delayShowMax options are set too low, asublim can lock up X on machines where refresh time is slow or many clients are attempting to refresh. Because asublim uses xosd and produces a virtual root window for every word, setting the delays too low or running too many instances can overflow the maximum client count and prevent windows from being opened (which has some non-obvious effects, such as preventing page loads in Chrome); to avoid this, you can lower the delayShowMax value, raise the delayWord values, run fewer instances, or (in the case of an emergency) send SIGSTOP:
 	killall -STOP asublim
 
+
+
+asublim-gtk is a fork of asublim using pygtk for rendering. It exists primarily so that truetype fonts can be used (versus bitmapped xfonts).
+
+It mostly works, but there is a bug wherein, over time (within the course of a few hours) the x coordinates shift left, until all sublims are rendered in a single column on the left hand side of the screen. This seems to be related to window position handling in pygtk. I'm not familiar enough with the library to be able to easily identify and fix this bug.
+
+asublim-gtk uses more resources than asublim-xosd (the mainline asublim), because of the weight of gtk versus plain xlib, and because of the overhead involved in processing and displaying truetype fonts and handling arbitrary unicode strings. But, otherwise, it behaves basically the same. It has its own fork of sublimWrap that supplies appropriate font names.
