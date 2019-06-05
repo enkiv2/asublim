@@ -1,13 +1,18 @@
 'asublim' is a clone of the (now defunct) 'xsublim' program formerly of JWZ's xscreensaver project. It supports many of the options and features of xsublim.
 
-To install:
+To install the C version:
 	make
 	sudo make install
 Make sure you have libxosd, x development packages, and gcc.
 
+Debian & Ubuntu ship with a version of libxosd that's broken and doesn't link properly. As a result, I have provided an equivalent python implementation, which requires pyosd. To install this:
+	sudo cp asublim.py /usr/bin/asublim
+	sudo cp sublimWrap /usr/bin/
+	sudo chmod a+x /usr/bin/asublim /usr/bin/sublimWrap
+
 By default, asublim will take its source data from standard input. So, it will happily read from pipes. It will exit when it exhausts all available input.
 
-A script, sublimWrap, has been provided that will attempt to randomize both the color and font of asublim. It has been tested with zsh. It expects xlsfonts, the x11 rgb.txt file, an asublim install, and a default shell that supports parenthesis-style command grouping -- so while zsh and bash should work, dash probably will not. Because of the way this script is written, the best way to kill it is to either kill the parent script or extinguish the input stream (for instance, by killing whatever feeder script is producing input).
+A script, sublimWrap, has been provided that will attempt to randomize both the color and font of asublim. It has been tested with zsh. It expects xlsfonts, the xrandr command line utility, the x11 rgb.txt file, an asublim install, and a default shell that supports parenthesis-style command grouping -- so while zsh and bash should work, dash probably will not. Because of the way this script is written, the best way to kill it is to either kill the parent script or extinguish the input stream (for instance, by killing whatever feeder script is producing input).
 
 There are some known problems with asublim that may cause problems, and can be remedied by modifying the configuration. If the delayShowMin and delayShowMax options are set too low, asublim can lock up X on machines where refresh time is slow or many clients are attempting to refresh. Because asublim uses xosd and produces a virtual root window for every word, setting the delays too low or running too many instances can overflow the maximum client count and prevent windows from being opened (which has some non-obvious effects, such as preventing page loads in Chrome); to avoid this, you can lower the delayShowMax value, raise the delayWord values, run fewer instances, or (in the case of an emergency) send SIGSTOP:
 	killall -STOP asublim
