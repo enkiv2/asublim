@@ -1,4 +1,4 @@
 #!/usr/bin/env zsh
 (echo $$ >> ~/.xs.pid ; false ; while [[ $? -ne 0 ]] ; do
-        asublim -c "$(cat /etc/X11/rgb.txt | grep '\t' | cut -f 3 | grep -v ' '| sort -R | head -n 1)" --font "$(xlsfonts | sort -R | head -n 1)"  `xrandr | grep ' connected' | head -n 1 | awk '{print $3}' | sed 's/^/--screen-width /;s/x/ --screen-height /;s/+.*$//'` "$@"
+        asublim -c "$(cat /etc/X11/rgb.txt | grep '\t' | cut -f 3 | grep -v ' '| sort -R | head -n 1)" --font "$(xlsfonts | sort -R | head -n 1)"  `xrandr | grep ' connected' | grep '[0-9]x[0-9]'| head -n 1 | sed 's/connected [^0-9]*//;' | awk '{print $2}' | sed 's/^/--screen-width /;s/x/ --screen-height /;s/+.*$//'` "$@"
 done) &
